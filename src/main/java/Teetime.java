@@ -9,7 +9,7 @@ public class Teetime {
 
 
     public boolean isBooked() {
-        return state.equals(State.BOOKED) || state.equals(State.ALL_BOOKED);
+        return state != null && (state.equals(State.BOOKED) || state.equals(State.ALL_BOOKED));
     }
 
     public void parseTime(String time) {
