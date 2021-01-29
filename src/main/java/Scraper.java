@@ -21,23 +21,24 @@ public class Scraper {
     }
 
     private void run() throws IOException {
+        String tmpUsername = "M436244";
+        String pwd = Resources.toString(Resources.getResource("password"), Charset.defaultCharset());
+        if (pwd.isEmpty()) {
+            exit(1);
+        }
+
+        // POST login data
         Map<String, String> koks = new HashMap<>();
         // get login form
         Connection.Response loginForm = Jsoup.connect("https://www.golf.at/mygolf/login/")
                 .method(Connection.Method.GET)
                 .execute();
 
-        list(loginForm.cookies());
+//        list(loginForm.cookies());
         koks.putAll(loginForm.cookies());
 //        System.out.println(loginForm.parse().text());
-        String pwd = Resources.toString(Resources.getResource("password"), Charset.defaultCharset());
-
-        if (pwd.isBlank()) {
-            exit(1);
-        }
-        // POST login data
         Connection.Response loginResponse = Jsoup.connect("https://www.golf.at/mygolf/login/")
-                .data("loginusername", "M436244")
+                .data("loginusername", tmpUsername)
                 .data("loginpassword", pwd)
                 .data("a", "dologin")
                 .data("wantedurl", "")
@@ -49,7 +50,12 @@ public class Scraper {
 //        list(koks);
 
 
-        Document  clubsResponse = Jsoup.connect("https://www.golf.at/mobile/startzeiten.asp?uri=/mygolf/tee-online/verfuegbare-startzeiten/golfclub-schoenfeld/315/")
+        String tmpClub = "golfclub-schoenfeld-neun-/338/";
+//               String tmpClub =  "golfclub-schoenfeld/315/";
+        String url = "https://www.golf.at/mobile/startzeiten.asp?uri=/mygolf/tee-online/verfuegbare-startzeiten/" + tmpClub;
+//        String url = "https://www.golf.at/mobile/startzeiten.asp?uri=/mygolf/tee-online/verfuegbare-startzeiten/golfclub-schoenfeld/315/";
+        Document clubsResponse = Jsoup.connect(url)
+
                 .method(Connection.Method.GET)
                 .cookies(koks)
                 .timeout(100000)
