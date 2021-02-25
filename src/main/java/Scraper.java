@@ -24,6 +24,7 @@ public class Scraper {
         String tmpUsername = "M436244";
         String pwd = Resources.toString(Resources.getResource("password"), Charset.defaultCharset());
         if (pwd.isEmpty()) {
+            System.err.println("Didn't find file ''passwd' with password.");
             exit(1);
         }
 
@@ -50,8 +51,8 @@ public class Scraper {
 //        list(koks);
 
 
-        String tmpClub = "golfclub-schoenfeld-neun-/338/";
-//               String tmpClub =  "golfclub-schoenfeld/315/";
+//        String tmpClub = "golfclub-schoenfeld-neun-/338/";
+               String tmpClub =  "golfclub-schoenfeld/315/";
         String url = "https://www.golf.at/mobile/startzeiten.asp?uri=/mygolf/tee-online/verfuegbare-startzeiten/" + tmpClub;
 //        String url = "https://www.golf.at/mobile/startzeiten.asp?uri=/mygolf/tee-online/verfuegbare-startzeiten/golfclub-schoenfeld/315/";
         Document clubsResponse = Jsoup.connect(url)
