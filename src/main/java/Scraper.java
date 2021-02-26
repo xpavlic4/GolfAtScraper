@@ -100,7 +100,11 @@ public class Scraper {
                 } else if(who.contains("Flight komplett ver")) {
                     t.setState(Teetime.State.ALL_BOOKED);
                 } else if (who.contains("br><br>")) {
-                    who = who.split("<br><br>")[0];
+                    if (who.contains("bekannte Spieler:")) {
+                        who = who.split("bekannte Spieler:")[1];
+                    } else {
+                        who = who.split("<br><br>")[0];
+                    }
                     String[] plauers = who.split("<br>");
                     for (String p :
                             plauers) {
