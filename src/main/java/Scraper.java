@@ -1,4 +1,3 @@
-import com.google.common.io.Resources;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Attribute;
@@ -8,10 +7,11 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Properties;
 
 import static java.lang.System.exit;
 
@@ -21,22 +21,35 @@ public class Scraper {
     }
 
     private void run() throws IOException {
-        String tmpUsername = "M436244";
-        String pwd = Resources.toString(Resources.getResource("password"), Charset.defaultCharset());
-        if (pwd.isEmpty()) {
-            System.err.println("Didn't find file ''passwd' with password.");
+        String tmpUsername = "";
+        String pwd = "";
+        try (InputStream input = Scraper.class.getResourceAsStream("config.properties")) {
+
+            Properties prop = new Properties();
+
+            // load a properties file
+            prop.load(input);
+
+            // get the property value and print it out
+            tmpUsername = prop.getProperty("username");
+            pwd = prop.getProperty("password");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
+        if (pwd.isEmpty() || tmpUsername.isEmpty()) {
+            System.err.println("Username or password are empty!");
             exit(1);
         }
 
         // POST login data
-        Map<String, String> koks = new HashMap<>();
         // get login form
         Connection.Response loginForm = Jsoup.connect("https://www.golf.at/mygolf/login/")
                 .method(Connection.Method.GET)
                 .execute();
 
 //        list(loginForm.cookies());
-        koks.putAll(loginForm.cookies());
+        Map<String, String> koks = new HashMap<>(loginForm.cookies());
 //        System.out.println(loginForm.parse().text());
         Connection.Response loginResponse = Jsoup.connect("https://www.golf.at/mygolf/login/")
                 .data("loginusername", tmpUsername)
@@ -71,8 +84,8 @@ public class Scraper {
     private static void process(Element a) {
         Attributes attrs = a.attributes();
         Iterator<Attribute> iterator = attrs.iterator();
-        String time = null;
-        String who = null;
+        String time;
+        String who;
         Teetime t = new Teetime();
         while (iterator.hasNext()) {
             Attribute next = iterator.next();
