@@ -16,21 +16,25 @@ public class Player {
     String club;
 
     public static Player parse(String p) {
-        if (p == null || p.isEmpty()|| p.startsWith("<"))
-            return null;
-        if (p.startsWith("Flight ganz gebucht."))
-            return  null;
         Player player;
         try {
             //System.out.println(p);
+            if (p.contains("Flight ganz gebucht."))
+                return null;
+            if (p.startsWith("<") || p.isEmpty())
+                return null;
             if (p.contains("bekannte Handicaps: "))
                 return null;
-            String hcp = p.substring(p.indexOf("(") + 1, p.indexOf(")"));
+            if (!p.contains("(")) {
+                player = new Player(p, "","" );
+            } else {
+                String hcp = p.substring(p.indexOf("(") + 1, p.indexOf(")"));
 
-            String club = parseClub(p);
-            player = new Player(p.split(" \\(")[0], club, hcp);
-        } catch (StringIndexOutOfBoundsException e) {
-            System.out.println("'"+ p+ "'");
+                String club = parseClub(p);
+                player = new Player(p.split(" \\(")[0], club, hcp);
+            }
+        } catch (Exception e) {
+            System.out.println(p);
             throw e;
         }
         return player;
@@ -69,20 +73,12 @@ public class Player {
         return name;
     }
 
-    public void setClub(String club) {
-        this.club = club;
-    }
-
-    public void setHcp(String hcp) {
-        this.hcp = hcp;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     @Override
     public String toString() {
-        return name + " "  + "(" + hcp + ")";
+        StringBuilder sb = new StringBuilder(name);
+        if (hcp != null && !hcp.isEmpty())
+            sb.append("(" + hcp + ")");
+        return sb.toString();
+
     }
 }

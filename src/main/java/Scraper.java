@@ -13,8 +13,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
-import static java.lang.System.exit;
-
 public class Scraper {
     public static void main(String[] args) throws IOException {
         new Scraper().run();
@@ -38,8 +36,8 @@ public class Scraper {
         }
 
         if (pwd.isEmpty() || tmpUsername.isEmpty()) {
-            System.err.println("Username or password are empty!");
-            exit(1);
+            throw new IllegalStateException("Username or password are empty!");
+            //exit(1);
         }
 
         // POST login data
@@ -51,7 +49,7 @@ public class Scraper {
 //        list(loginForm.cookies());
         Map<String, String> koks = new HashMap<>(loginForm.cookies());
 //        System.out.println(loginForm.parse().text());
-        Connection.Response loginResponse = Jsoup.connect("https://www.golf.at/mygolf/login/")
+        Jsoup.connect("https://www.golf.at/mygolf/login/")
                 .data("loginusername", tmpUsername)
                 .data("loginpassword", pwd)
                 .data("a", "dologin")
@@ -60,9 +58,6 @@ public class Scraper {
                 .method(Connection.Method.POST)
                 .timeout(100000)
                 .execute();
-//        System.out.println(loginResponse.parse().text());
-//        list(koks);
-
 
 //        String tmpClub = "golfclub-schoenfeld-neun-/338/";
                String tmpClub =  "golfclub-schoenfeld/315/";
@@ -99,42 +94,18 @@ public class Scraper {
                     t.setState(Teetime.State.NOT_AVAILABLE);
                 } else if(who.contains("Flight komplett ver")) {
                     t.setState(Teetime.State.ALL_BOOKED);
-                } else if (who.contains("bekannte Spieler:<br><br><br>")) {
-                    // do nothing
-
-                    t.setState(Teetime.State.BOOKED);
-
-                } else if (who.contains("bekannte Spieler:")) {
-                    /**
-                     * bekannte Handicaps: 11,4 25,9 0,0 0,0 <br><br><br><u>bekannte Spieler:</u><br>Jung Harald (11,4) GOLFCLUB SCHÖNFELD<br>Becher Christian (25,9) GOLFCLUB SCHÖNFELD<br><br><br><br>Flight ganz gebucht.
-                     */
-                    String[] whos = who.split("bekannte Spieler:");
-                    String s = whos[1]
-;
-                        String[] plauers = s.split("<br>");
-                        for (String p :
-                                plauers) {
-                            Player player = Player.parse(p);
-                            if (player != null)
-                                t.addPlayer(player);
-
-                        }
-
-
-                    t.setState(Teetime.State.BOOKED);
                 } else if (who.contains("br><br>")) {
-                    String[] whos = who.split("<br><br>");
-
-                    for (String s : whos) {
-                        String[] plauers = s.split("<br>");
-                        for (String p :
-                                plauers) {
-                            Player player = Player.parse(p);
-                            if (player != null)
-                                t.addPlayer(player);
-
-                        }
-                        break;
+                    if (who.contains("bekannte Spieler:")) {
+                        who = who.split("bekannte Spieler:")[1];
+                    } else {
+                        who = who.split("<br><br>")[0];
+                    }
+                    String[] plauers = who.split("<br>");
+                    for (String p :
+                            plauers) {
+                        Player player = Player.parse(p);
+                        if (player != null)
+                            t.addPlayer(player);
                     }
                     t.setState(Teetime.State.BOOKED);
                 }
@@ -150,8 +121,4 @@ public class Scraper {
 
     }
 
-    static void list(Map<String, String> a) {
-        a.forEach((key, b) -> System.out.println(key + " -> " + b));
-        System.out.println();
-    }
 }
