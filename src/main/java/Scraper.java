@@ -99,14 +99,42 @@ public class Scraper {
                     t.setState(Teetime.State.NOT_AVAILABLE);
                 } else if(who.contains("Flight komplett ver")) {
                     t.setState(Teetime.State.ALL_BOOKED);
+                } else if (who.contains("bekannte Spieler:<br><br><br>")) {
+                    // do nothing
+
+                    t.setState(Teetime.State.BOOKED);
+
+                } else if (who.contains("bekannte Spieler:")) {
+                    /**
+                     * bekannte Handicaps: 11,4 25,9 0,0 0,0 <br><br><br><u>bekannte Spieler:</u><br>Jung Harald (11,4) GOLFCLUB SCHÖNFELD<br>Becher Christian (25,9) GOLFCLUB SCHÖNFELD<br><br><br><br>Flight ganz gebucht.
+                     */
+                    String[] whos = who.split("bekannte Spieler:");
+                    String s = whos[1]
+;
+                        String[] plauers = s.split("<br>");
+                        for (String p :
+                                plauers) {
+                            Player player = Player.parse(p);
+                            if (player != null)
+                                t.addPlayer(player);
+
+                        }
+
+
+                    t.setState(Teetime.State.BOOKED);
                 } else if (who.contains("br><br>")) {
-                    who = who.split("<br><br>")[0];
-                    String[] plauers = who.split("<br>");
-                    for (String p :
-                            plauers) {
-                        Player player = Player.parse(p);
-                        if (player != null)
-                            t.addPlayer(player);
+                    String[] whos = who.split("<br><br>");
+
+                    for (String s : whos) {
+                        String[] plauers = s.split("<br>");
+                        for (String p :
+                                plauers) {
+                            Player player = Player.parse(p);
+                            if (player != null)
+                                t.addPlayer(player);
+
+                        }
+                        break;
                     }
                     t.setState(Teetime.State.BOOKED);
                 }

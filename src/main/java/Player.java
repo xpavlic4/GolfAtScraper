@@ -16,6 +16,10 @@ public class Player {
     String club;
 
     public static Player parse(String p) {
+        if (p == null || p.isEmpty()|| p.startsWith("<"))
+            return null;
+        if (p.startsWith("Flight ganz gebucht."))
+            return  null;
         Player player;
         try {
             //System.out.println(p);
@@ -25,8 +29,8 @@ public class Player {
 
             String club = parseClub(p);
             player = new Player(p.split(" \\(")[0], club, hcp);
-        } catch (Exception e) {
-            System.out.println(p);
+        } catch (StringIndexOutOfBoundsException e) {
+            System.out.println("'"+ p+ "'");
             throw e;
         }
         return player;

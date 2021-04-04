@@ -1,3 +1,4 @@
+import com.google.common.annotations.VisibleForTesting;
 import org.junit.Test;
 
 import java.util.regex.Matcher;
@@ -27,5 +28,11 @@ public class PlayerTest {
         }
 
 
+    }
+    @Test
+    public void test3() {
+        String x = "Ju Ha (11,4) GOLFCLUB SCHÖNFELD<br>Be Chr (25,9) GOLFCLUB SCHÖNFELD<br><br><br><br>Flight ganz gebucht.";
+        Player parse = Player.parse(x);
+        System.out.println(parse);
     }
 }
