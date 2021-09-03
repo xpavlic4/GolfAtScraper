@@ -13,6 +13,6 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
     // https://mvnrepository.com/artifact/org.jsoup/jsoup
     compile group: 'org.jsoup', name: 'jsoup', version: '1.14.2'
-    implementation("com.google.guava:guava:30.0-jre")
+    implementation('com.google.guava:guava:30.1.1-jre')
 
 }
