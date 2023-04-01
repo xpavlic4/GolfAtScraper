@@ -21,6 +21,7 @@ public class Scraper {
     private void run() throws IOException {
         String tmpUsername = "";
         String pwd = "";
+        String club = "";
         try (InputStream input = Scraper.class.getResourceAsStream("config.properties")) {
 
             Properties prop = new Properties();
@@ -31,6 +32,7 @@ public class Scraper {
             // get the property value and print it out
             tmpUsername = prop.getProperty("username");
             pwd = prop.getProperty("password");
+            club = prop.getProperty("club");
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -59,10 +61,7 @@ public class Scraper {
                 .timeout(100000)
                 .execute();
 
-//        String tmpClub = "golfclub-schoenfeld-neun-/338/";
-               String tmpClub =  "golfclub-schoenfeld/315/";
-        String url = "https://www.golf.at/mobile/startzeiten.asp?uri=/mygolf/tee-online/verfuegbare-startzeiten/" + tmpClub;
-//        String url = "https://www.golf.at/mobile/startzeiten.asp?uri=/mygolf/tee-online/verfuegbare-startzeiten/golfclub-schoenfeld/315/";
+        String url = "https://www.golf.at/mobile/startzeiten.asp?uri=/mygolf/tee-online/verfuegbare-startzeiten/" + club;
         Document clubsResponse = Jsoup.connect(url)
 
                 .method(Connection.Method.GET)
